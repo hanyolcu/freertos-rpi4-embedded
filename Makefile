@@ -1,34 +1,16 @@
-# Simple Makefile for C++ project
+program: build/main.o build/ethernet.o
+	gcc -o build/program build/main.o build/ethernet.o
 
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -O2
-INCLUDES = -Iinclude
+build/main.o: src/main.c
+	gcc -c src/main.c -o build/main.o
 
-SRC_DIR = src
-BUILD_DIR = build
-TARGET = $(BUILD_DIR)/main
+build/ethernet.o: src/ethernet.c src/ethernet.h
+	gcc -c src/ethernet.c -o build/ethernet.o
 
-# Source files
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-
-.PHONY: all clean run
-
-all: $(BUILD_DIR) $(TARGET)
-
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@
-	@echo "Build complete: $(TARGET)"
-
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-run: $(TARGET)
-	./$(TARGET)
+run: program
+	sudo ./build/program
 
 clean:
-	rm -rf $(BUILD_DIR)
-	@echo "Clean complete"
+	rm -f build/*.o build/program
+
+.PHONY: run clean
